@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Reservas de Aulas</title>
+    <link rel="icon" href="data:,">
     <style>
         * {
             margin: 0;
@@ -126,6 +127,7 @@
             cursor: pointer;
             text-decoration: none;
             font-weight: 600;
+            margin-left: 5px;
         }
 
         .auth-toggle a:hover {
@@ -440,7 +442,6 @@
     </style>
 </head>
 <body>
-    <!-- PANTALLA DE LOGIN/REGISTRO -->
     <div id="authSection" class="auth-container">
         <div class="auth-card">
             <h2 id="authTitle">Iniciar Sesión</h2>
@@ -466,14 +467,13 @@
             </form>
 
             <div class="auth-toggle">
-                <span id="toggleText">¿No tienes cuenta? <a id="toggleLink">Regístrate</a></span>
+                <span id="toggleTextLabel">¿No tienes cuenta?</span>
+                <a id="toggleLink">Regístrate</a>
             </div>
         </div>
     </div>
 
-    <!-- APLICACIÓN PRINCIPAL -->
     <div id="appContainer" class="app-container container">
-        <!-- HEADER -->
         <div class="header">
             <h1>🏫 Sistema de Reservas de Aulas</h1>
             <div class="user-info">
@@ -485,7 +485,6 @@
             </div>
         </div>
 
-        <!-- NAVEGACIÓN -->
         <div class="nav-tabs">
             <button class="nav-tab active" onclick="cambiarTab('dashboard')">📊 Dashboard</button>
             <button class="nav-tab" onclick="cambiarTab('misReservas')">📅 Mis Reservas</button>
@@ -494,7 +493,6 @@
             <button class="nav-tab" onclick="cambiarTab('horarios')">⏰ Horarios</button>
         </div>
 
-        <!-- DASHBOARD -->
         <div id="dashboard" class="content-section active">
             <h2>Bienvenido</h2>
             <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
@@ -509,13 +507,11 @@
             </div>
         </div>
 
-        <!-- MIS RESERVAS -->
         <div id="misReservas" class="content-section">
             <h2>Mis Reservas</h2>
             <div id="reservasList" class="grid"></div>
         </div>
 
-        <!-- NUEVA RESERVA -->
         <div id="nuevaReserva" class="content-section">
             <h2>Crear Nueva Reserva</h2>
             <form id="reservaForm">
@@ -550,7 +546,6 @@
             </form>
         </div>
 
-        <!-- AULAS -->
         <div id="aulas" class="content-section">
             <div class="section-header">
                 <h2>Aulas Disponibles</h2>
@@ -559,7 +554,6 @@
             <div id="aulasList" class="grid"></div>
         </div>
 
-        <!-- HORARIOS -->
         <div id="horarios" class="content-section">
             <div class="section-header">
                 <h2>Horarios Disponibles</h2>
@@ -569,7 +563,6 @@
         </div>
     </div>
 
-    <!-- MODAL AULA -->
     <div id="aulaModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -600,7 +593,6 @@
         </div>
     </div>
 
-    <!-- MODAL HORARIO -->
     <div id="horarioModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -662,27 +654,33 @@
             }, tipo === 'error' ? 5000 : 3000);
         }
 
-        // TOGGLE LOGIN/REGISTRO
+        // TOGGLE LOGIN/REGISTRO (CORREGIDO)
         document.getElementById('toggleLink').addEventListener('click', () => {
             isLogin = !isLogin;
+            
             const title = document.getElementById('authTitle');
             const button = document.getElementById('authButton');
-            const toggleText = document.getElementById('toggleText');
+            const toggleTextLabel = document.getElementById('toggleTextLabel');
+            const toggleLink = document.getElementById('toggleLink');
             const nombreGroup = document.getElementById('nombreGroup');
 
             if (isLogin) {
                 title.textContent = 'Iniciar Sesión';
                 button.textContent = 'Iniciar Sesión';
-                toggleText.innerHTML = '¿No tienes cuenta? <a id="toggleLink">Regístrate</a>';
+                toggleTextLabel.textContent = '¿No tienes cuenta?';
+                toggleLink.textContent = 'Regístrate';
                 nombreGroup.classList.add('hidden');
+                // Limpiamos errores previos al cambiar de modo
+                document.getElementById('alertContainer').innerHTML = '';
             } else {
                 title.textContent = 'Registro';
                 button.textContent = 'Registrarse';
-                toggleText.innerHTML = '¿Ya tienes cuenta? <a id="toggleLink">Inicia sesión</a>';
+                toggleTextLabel.textContent = '¿Ya tienes cuenta?';
+                toggleLink.textContent = 'Inicia sesión';
                 nombreGroup.classList.remove('hidden');
+                // Limpiamos errores previos al cambiar de modo
+                document.getElementById('alertContainer').innerHTML = '';
             }
-
-            document.getElementById('toggleLink').addEventListener('click', arguments.callee);
         });
 
         // FORMULARIO AUTH
@@ -708,7 +706,10 @@
                     body: JSON.stringify({ email, password })
                 });
 
-                if (!response.ok) throw new Error('Credenciales incorrectas');
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.mensaje || 'Credenciales incorrectas');
+                }
 
                 const data = await response.json();
                 token = data.token;
@@ -730,12 +731,14 @@
                     body: JSON.stringify({ email, password, nombre })
                 });
 
-                if (!response.ok) throw new Error('Error en el registro');
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.mensaje || 'Error en el registro');
+                }
 
                 mostrarAlerta('Usuario registrado correctamente. Ahora inicia sesión.', 'success');
-                setTimeout(() => {
-                    document.getElementById('toggleLink').click();
-                }, 2000);
+                // Simular click para cambiar a login automáticamente
+                document.getElementById('toggleLink').click();
             } catch (error) {
                 mostrarAlerta(error.message, 'error');
             }
