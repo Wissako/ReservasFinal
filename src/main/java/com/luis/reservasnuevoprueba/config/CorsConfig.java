@@ -1,7 +1,5 @@
 package com.luis.reservasnuevoprueba.config;
 
-
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -9,7 +7,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-import java.util.List;
+
 
 /**
  * Configuración global de CORS (Cross-Origin Resource Sharing)
@@ -22,20 +20,17 @@ public class CorsConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Orígenes permitidos (URLs desde donde se pueden hacer peticiones)
+        // ✅ AÑADE TU DOMINIO DE RENDER AQUÍ
         configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:3000",           // React local
-                "http://localhost:4200",           // Angular local
-                "http://localhost:5173",           // Vite local
-                "http://localhost:8081",           // Otro puerto local
-                "http://127.0.0.1:5500",           // Live Server
-                "https://tu-frontend.vercel.app",  // Vercel
-                "https://tu-frontend.netlify.app", // Netlify
-                "*"                                 // Permite todos (solo para desarrollo)
+                "http://localhost:3000",                            // React local
+                "http://localhost:4200",                            // Angular local
+                "http://localhost:5173",                            // Vite local
+                "http://localhost:8081",                            // Otro puerto local
+                "http://127.0.0.1:5500",                            // Live Server
+                "https://reservasfinal-frontend.onrender.com",      // ✅ TU FRONTEND EN RENDER
+                "https://tu-frontend.vercel.app",                   // Vercel
+                "https://tu-frontend.netlify.app"                   // Netlify
         ));
-
-        // También puedes usar patrones con allowedOriginPatterns
-        // configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:*"));
 
         // Métodos HTTP permitidos
         configuration.setAllowedMethods(Arrays.asList(
